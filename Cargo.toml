@@ -7,3 +7,4 @@ authors = ["Wim Looman <wim@nemo157.com>"]
 cargo = "0.15"
 rustc-serialize = "0.3"
 itertools = "0.5"
+clap = "2.31.2"
