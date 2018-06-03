@@ -8,10 +8,13 @@ cargo = "0.15"
 rustc-serialize = "0.3"
 itertools = "0.5"
 clap = "2.31.2"
+notify-rust = { version = "*", optional = true }
 
 [features]
-test0 = []
-test1 = []
-test2 = []
-test3 = []
-test4 = []
+default = []
+empty0 = []
+empty1 = []
+empty2 = []
+meta0 = ["empty1", "empty2"]
+meta1 = ["empty1", "empty2", "meta0"]
+external = ["notify-rust"]
