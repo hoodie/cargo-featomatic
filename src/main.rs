@@ -1,19 +1,19 @@
 extern crate cargo;
 #[macro_use]
 extern crate clap;
-extern crate rustc_serialize;
 extern crate itertools;
+extern crate rustc_serialize;
 
 use std::iter::FromIterator;
 use std::process;
 
-mod util;
 mod cli;
+mod util;
 
 use cargo::core::Workspace;
-use cargo::util::{ human, CliResult, CliError, Config };
 use cargo::util::important_paths::find_root_manifest_for_wd;
 use cargo::util::process_builder::process;
+use cargo::util::{human, CliError, CliResult, Config};
 use itertools::Itertools;
 
 fn main() {
@@ -33,10 +33,13 @@ fn real_main(options: cli::Options, config: &Config) -> CliResult<Option<()>> {
         Some(options.quiet),
         &options.color,
         options.frozen,
-        options.locked)?;
+        options.locked,
+    )?;
 
     if options.version {
-        config.shell().say(format!("cargo-featomatic {}", env!("CARGO_PKG_VERSION")), 0)?;
+        config
+            .shell()
+            .say(format!("cargo-featomatic {}", env!("CARGO_PKG_VERSION")), 0)?;
         return Ok(None);
     }
 
@@ -67,9 +70,19 @@ fn real_main(options: cli::Options, config: &Config) -> CliResult<Option<()>> {
     };
 
     let root = find_root_manifest_for_wd(options.manifest_path, config.cwd())?;
-    let workspace = Workspace::new(&root, config).map_err(|e| {println!("{:#?}", e);e})?;
+    let workspace = Workspace::new(&root, config).map_err(|e| {
+        println!("{:#?}", e);
+        e
+    })?;
     let current = workspace.current()?;
-    let features = Vec::from_iter(current.summary().features().keys().map(|s| s as &str).filter(|s| s != &"default"));
+    let features = Vec::from_iter(
+        current
+            .summary()
+            .features()
+            .keys()
+            .map(|s| s as &str)
+            .filter(|s| s != &"default"),
+    );
 
     let set_to_process = |set| {
         let mut process = process("cargo");
@@ -81,7 +94,12 @@ fn real_main(options: cli::Options, config: &Config) -> CliResult<Option<()>> {
         process
     };
 
-    let feature_sets = (1..features.len()).flat_map(|n| features.iter().combinations(n).map(|combination| combination.iter().join(" ")));
+    let feature_sets = (1..features.len()).flat_map(|n| {
+        features
+            .iter()
+            .combinations(n)
+            .map(|combination| combination.iter().join(" "))
+    });
     let sets = feature_sets.collect::<Vec<_>>();
     println!("feature sets {:#?} {}", sets, sets.len());
 
